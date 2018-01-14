@@ -13,9 +13,9 @@ var liri = {
         client.get('statuses/user_timeline', params, function(error, tweets, response) {
             if (!error) {
                 console.log("-------------------------------")
-                console.log("Oprah's Tweets:\n");
+                console.log("Oprah's Tweets (since I don't tweet):\n");
                 for (var i = 0; i < 20; i++) {
-                    console.log((i+1) + ". " + tweets[i].text);
+                    console.log((i+1) + ". " + tweets[i].text + "\n");
                 }
                 console.log("-------------------------------")
             }
@@ -58,15 +58,32 @@ var liri = {
     do: function() {},
     paramaterize: function(processArgvArray) {
         let array = process.argv;
-        array.splice(0,2);
+        array.splice(0,3);
         let string = array.join("+");
         return string;
     },
     stringify: function(processArgvArray) {
         let array = process.argv;
-        array.splice(0,2);
+        array.splice(0,3);
         let string = array.join(" ");
         return string;
     }
 };
+
+let command = process.argv[2];
+if (command === "my-tweets") {
+    liri.tweets();
+}
+else if (command === "spotify-this-song") {
+    liri.song(liri.stringify(process.argv));
+}
+else if (command === "movie-this") {
+    liri.movie(liri.paramaterize(process.argv));
+}
+else if (command === "do-what-it-says") {
+    console.log("Not yet.")
+}
+else {
+    console.log("I don't recognize that command.");
+}
 
