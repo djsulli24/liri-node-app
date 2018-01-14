@@ -61,6 +61,12 @@ var liri = {
         array.splice(0,2);
         let string = array.join("+");
         return string;
+    },
+    stringify: function(processArgvArray) {
+        let array = process.argv;
+        array.splice(0,2);
+        let string = array.join(" ");
+        return string;
     }
 };
 
