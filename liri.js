@@ -13,12 +13,13 @@ var liri = {
         var params = {screen_name: 'oprah'};
         client.get('statuses/user_timeline', params, function(error, tweets, response) {
             if (!error) {
-                console.log("-------------------------------")
-                console.log("Oprah's Tweets (since I don't tweet):\n");
+                let string = `-------------------------------\nOprah's Tweets (since I don't tweet):\n\n`;
                 for (var i = 0; i < 20; i++) {
-                    console.log((i+1) + ". " + tweets[i].text + "\n");
+                    string += (i+1) + ". " + tweets[i].text + "\n\n"
                 }
-                console.log("-------------------------------")
+                string += `-------------------------------\n`;
+                console.log(string);
+                liri.logFile(string);
             }
         });
     },
@@ -29,12 +30,14 @@ var liri = {
             if (err) {
               return console.log('Error occurred: ' + err);
             }
-            console.log("-------------------------------")
-            console.log("Artist: " + data.tracks.items[0].album.artists[0].name); 
-            console.log("Song: " + data.tracks.items[0].name);
-            console.log("Preview Link: " + data.tracks.items[0].preview_url);
-            console.log("Album: " + data.tracks.items[0].album.name);
-            console.log("-------------------------------")
+            let string = `-------------------------------
+            \nArtist: ${data.tracks.items[0].album.artists[0].name} 
+            \nSong: ${data.tracks.items[0].name}
+            \nPreview Link: ${data.tracks.items[0].preview_url}
+            \nAlbum: ${data.tracks.items[0].album.name}
+            \n-------------------------------\n`
+            console.log(string);
+            liri.logFile(string);
             });
     },
     // This function must be passed the parameterized movie title, ex: "back+to+the+future"
@@ -43,17 +46,18 @@ var liri = {
 
         let queryURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + movieNameParameterized;
         request(queryURL, function(error, response, body) {
-            console.log("-------------------------------")
-            console.log("Title: " + JSON.parse(body).Title);
-            console.log("Year: " + JSON.parse(body).Year);
-            console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
-            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
-            console.log("Country of Production: " + JSON.parse(body).Country);
-            console.log("Language: " + JSON.parse(body).Language);
-            console.log("Plot: " + JSON.parse(body).Plot);
-            console.log("Actors: " + JSON.parse(body).Actors);
-            console.log("-------------------------------")
-
+            let string = `-------------------------------
+                \nTitle: ${JSON.parse(body).Title}
+                \nYear: ${JSON.parse(body).Year}
+                \nIMDB Rating: ${JSON.parse(body).imdbRating}
+                \nRotten Tomatoes Rating: ${JSON.parse(body).Ratings[1].Value}
+                \nCountry of Production: ${JSON.parse(body).Country}
+                \nLanguage: ${JSON.parse(body).Language}
+                \nPlot: ${JSON.parse(body).Plot}
+                \nActors: ${JSON.parse(body).Actors}
+                \n-------------------------------\n`
+            console.log(string);
+            liri.logFile(string);
         });
     },
     do: function(command, string) {
@@ -93,6 +97,13 @@ var liri = {
         else {
             console.log("I don't recognize that command.");
         }
+    },
+    logFile: function(string) {
+        fs.appendFile("log.txt", string, function(err) {
+            if (err) {
+                console.log(err);
+            }
+        });
     }
 };
 
