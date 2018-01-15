@@ -52,8 +52,8 @@ var liri = {
             liri.logFile(string);
             });
     },
-    // This function must be passed the parameterized movie title, ex: "back+to+the+future"
-    // The parameterize() function does this when it is passed the process.argv array
+    // This takes the string of the movie title, parameterizes it by adding + characters
+    // where there are spaces in the title string, and makes the API call to OMDB
     movie: function(movieName) {
         // An API call is made to OMDB with the user's entered movie. If they haven't
         // entered a movie, the call is made for the movie "Mr. Nobody"
@@ -88,9 +88,9 @@ var liri = {
         let string = array.join(" ");
         return string;
     },
-    // This function takes the user's command (such as movie-this), and decides which
-    // method to call based on the command, then passes the stringified or parameterized
-    // process.argv as an argument to the correct method
+    /* This method takes the user's command (such as movie-this) and string following the command, 
+    and decides which method to call based on the command, then passes the string to the correct
+    method */
     commandRouting: function(command, string) {
         if (command === "my-tweets") {
             liri.tweets();
@@ -101,16 +101,6 @@ var liri = {
         else if (command === "movie-this") {
             liri.movie(string);
         }
-        /* FUTURE IMPROVEMENT NEEDED: All of the other methods are built to 
-        take the user's entered data from process.argv, which can't be done
-        for do-what-it-says, since the data comes from the random.txt file.
-        So, this deletes out process.argv[3] and all higher indices, and sets
-        process.argv[3] equal to the string from random.txt. It then calls this
-        commandRouting method recursively with the command. 
-        
-        The commandRouting method and other methods should be refactored to take
-        both a command and a string as arguments. Then process.argv wouldn't need
-        to be directly manipulated*/
         else if (command === "do-what-it-says") {
             fs.readFile("random.txt", "utf8", function(error, data) {
                 let string = data.replace(/"/g, "");
@@ -132,7 +122,8 @@ var liri = {
         });
     }
 };
-// Passes the user's command given on the CLI to the commandRouting method
+
+// Passes the user's command and string given on the CLI to the commandRouting method
 liri.commandRouting(process.argv[2], liri.stringify(process.argv));
 
 
