@@ -54,10 +54,10 @@ var liri = {
     },
     // This function must be passed the parameterized movie title, ex: "back+to+the+future"
     // The parameterize() function does this when it is passed the process.argv array
-    movie: function(movieNameParameterized) {
+    movie: function(movieName) {
         // An API call is made to OMDB with the user's entered movie. If they haven't
         // entered a movie, the call is made for the movie "Mr. Nobody"
-        let queryURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + ((movieNameParameterized)? movieNameParameterized:"Mr+Nobody");
+        let queryURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + ((movieName)? this.paramaterize(movieName):"Mr+Nobody");
         request(queryURL, function(error, response, body) {
             let object = JSON.parse(body);
             let string = `-------------------------------
@@ -76,11 +76,8 @@ var liri = {
     },
     // This takes a string ("Back to the Future"), adds + characters in between
     // words ("Back+to+the+Future") and returns the string
-    paramaterize: function(processArgvArray) {
-        let array = process.argv;
-        array.splice(0,3);
-        let string = array.join("+");
-        return string;
+    paramaterize: function(string) {
+        return string.replace(/ /g, "+");
     },
     // This takes all of the words the user has added after the command in the CLI
     // from the process.argv array and combines them into a string with spaces in between
@@ -94,15 +91,15 @@ var liri = {
     // This function takes the user's command (such as movie-this), and decides which
     // method to call based on the command, then passes the stringified or parameterized
     // process.argv as an argument to the correct method
-    commandRouting: function(command) {
+    commandRouting: function(command, string) {
         if (command === "my-tweets") {
             liri.tweets();
         }
         else if (command === "spotify-this-song") {
-            liri.song(liri.stringify(process.argv));
+            liri.song(string);
         }
         else if (command === "movie-this") {
-            liri.movie(liri.paramaterize(process.argv));
+            liri.movie(string);
         }
         /* FUTURE IMPROVEMENT NEEDED: All of the other methods are built to 
         take the user's entered data from process.argv, which can't be done
@@ -118,13 +115,12 @@ var liri = {
             fs.readFile("random.txt", "utf8", function(error, data) {
                 let string = data.replace(/"/g, "");
                 let array = string.split(",");
-                process.argv = process.argv.splice(0,4);
-                process.argv[3] = array[1];
-                liri.commandRouting(array[0]);
+                liri.commandRouting(array[0], array[1]);
             });
         }
         else {
-            console.log("I don't recognize that command.");
+            console.log(`-------------------------------\nI don't recognize that command\n-------------------------------\n`);
+            this.logFile(`-------------------------------\nI don't recognize that command\n-------------------------------\n`)
         }
     },
     // This method logs a given string to the log.txt file.
@@ -137,6 +133,6 @@ var liri = {
     }
 };
 // Passes the user's command given on the CLI to the commandRouting method
-liri.commandRouting(process.argv[2]);
+liri.commandRouting(process.argv[2], liri.stringify(process.argv));
 
 
