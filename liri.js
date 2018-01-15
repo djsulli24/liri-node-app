@@ -2,7 +2,8 @@ require("dotenv").config();
 var keys = require("./keys");
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
-var request = require('request')
+var request = require('request');
+var fs = require("fs");
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
@@ -55,7 +56,9 @@ var liri = {
 
         });
     },
-    do: function() {},
+    do: function(command, string) {
+
+    },
     paramaterize: function(processArgvArray) {
         let array = process.argv;
         array.splice(0,3);
@@ -67,23 +70,32 @@ var liri = {
         array.splice(0,3);
         let string = array.join(" ");
         return string;
+    },
+    commandRouting: function(command) {
+        if (command === "my-tweets") {
+            liri.tweets();
+        }
+        else if (command === "spotify-this-song") {
+            liri.song(liri.stringify(process.argv));
+        }
+        else if (command === "movie-this") {
+            liri.movie(liri.paramaterize(process.argv));
+        }
+        else if (command === "do-what-it-says") {
+            fs.readFile("random.txt", "utf8", function(error, data) {
+                let string = data.replace(/"/g, "");
+                let array = string.split(",");
+                process.argv = process.argv.splice(0,4);
+                process.argv[3] = array[1];
+                liri.commandRouting(array[0]);
+            });
+        }
+        else {
+            console.log("I don't recognize that command.");
+        }
     }
 };
 
-let command = process.argv[2];
-if (command === "my-tweets") {
-    liri.tweets();
-}
-else if (command === "spotify-this-song") {
-    liri.song(liri.stringify(process.argv));
-}
-else if (command === "movie-this") {
-    liri.movie(liri.paramaterize(process.argv));
-}
-else if (command === "do-what-it-says") {
-    console.log("Not yet.")
-}
-else {
-    console.log("I don't recognize that command.");
-}
+liri.commandRouting(process.argv[2]);
+
 
